@@ -124,7 +124,8 @@ export MONGODB_CFG_PRIMARY_PORT_NUMBER="${MONGODB_CFG_PRIMARY_PORT_NUMBER:-27017
 export MONGODB_MONGOS_HOST="${MONGODB_MONGOS_HOST:-}"
 export MONGODB_MONGOS_PORT_NUMBER="${MONGODB_MONGOS_PORT_NUMBER:-27017}"
 
-rm -f "${MONGODB_LOG_FILE}"
-touch "${MONGODB_LOG_FILE}"
+rm -f ${MONGODB_LOG_FILE}
+echo "init content in log" >> ${MONGODB_LOG_FILE}
+printf "init log file..."
 
 # Custom environment variables may be defined below
