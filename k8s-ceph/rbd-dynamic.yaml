@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ceph-secret-admin
+  namespace: kube-system
+type: kubernetes.io/rbd
+data:
+  key: QVFBNnYrQmR4TkR0RkJBQVF5bFplSG1vK0pKdzYwSkRzY2NrL2c9PQ==
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ceph-secret-kube
+  namespace: default
+type: kubernetes.io/rbd
+data:
+  key: QVFCVXhPQmRVRnNIREJBQUFBdlFFRGtiaGVzdFhQd2d3WEswL0E9PQ==
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: rbd-dynamic
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: kubernetes.io/rbd
+parameters:
+  monitors: 192.168.193.160:6789,192.168.193.161:6789,192.168.193.162:6789
+  adminId: admin
+  adminSecretName: ceph-secret-admin
+  adminSecretNamespace: kube-system
+  pool: kube
+  userId: kube
+  userSecretName: ceph-secret-kube
+  userSecretNamespace: default
+  fsType: xfs
+  imageFormat: "2"
+  imageFeatures: "layering"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ceph-pvc-dynamic
+  namespace: default
+spec:
+  storageClassName: rbd-dynamic
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
