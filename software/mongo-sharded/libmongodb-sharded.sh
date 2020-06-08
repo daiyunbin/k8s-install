@@ -71,19 +71,17 @@ mongodb_sharded_mongod_initialize() {
         mongodb_stop
     else
         persisted=true
-        info "Deploying MongoDB Sharded with persisted data..."
-
-        mongodb_start_bg
         mongodb_create_keyfile "$MONGODB_REPLICA_SET_KEY"
         mongodb_set_keyfile_conf
         mongodb_set_auth_conf
+        info "Deploying MongoDB Sharded with persisted data..."
         if [[ "$MONGODB_REPLICA_SET_MODE" = "dynamic" ]]; then
             mongodb_ensure_dynamic_mode_consistency
         fi
         mongodb_set_replicasetmode_conf
-        mongodb_set_listen_all_conf
-        mongodb_sharded_configure_replica_set
-        mongodb_stop
+
+        am_i_root && chown -R "$MONGODB_DAEMON_USER" "$MONGODB_DATA_DIR/db"
+        mongodb_start_bg
     fi
 
     if [[ "$MONGODB_SHARDING_MODE" = "shardsvr" ]] && [[ "$MONGODB_REPLICA_SET_MODE" = "primary" ]]; then
