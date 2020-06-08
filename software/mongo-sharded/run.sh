@@ -30,7 +30,8 @@ fi
 info "** Starting MongoDB **"
 if am_i_root; then
     chown -R "$MONGODB_DAEMON_USER" "$MONGODB_DATA_DIR/db"
-    exec gosu "$MONGODB_DAEMON_USER" "${cmd}" "${flags[@]}"
+#    exec gosu "$MONGODB_DAEMON_USER" "${cmd}" "${flags[@]}"
+    exec sudo "${cmd}" "${flags[@]}"
 else
     exec "${cmd}" "${flags[@]}"
 fi
