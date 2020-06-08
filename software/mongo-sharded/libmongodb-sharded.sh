@@ -81,7 +81,7 @@ mongodb_sharded_mongod_initialize() {
         mongodb_set_replicasetmode_conf
 
         am_i_root && chown -R "$MONGODB_DAEMON_USER" "$MONGODB_DATA_DIR/db"
-        mongodb_start_bg
+#        mongodb_start_bg
     fi
 
     if [[ "$MONGODB_SHARDING_MODE" = "shardsvr" ]] && [[ "$MONGODB_REPLICA_SET_MODE" = "primary" ]]; then
