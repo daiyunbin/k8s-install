@@ -126,7 +126,6 @@ export MONGODB_MONGOS_PORT_NUMBER="${MONGODB_MONGOS_PORT_NUMBER:-27017}"
 
 rm -f ${MONGODB_LOG_FILE}
 echo "init content in log" >> ${MONGODB_LOG_FILE}
-cat ${MONGODB_LOG_FILE}
-printf "init log file..." "${MONGODB_LOG_FILE}"
+echo "init log file... ${MONGODB_LOG_FILE}"
 
 # Custom environment variables may be defined below
