@@ -31,3 +31,15 @@ helm upgrade my-harbor . -f values.yaml
 # 更新可能会出问题，直接删除重建
 
 ```
+
+NOTES:
+** Please be patient while the chart is being deployed **
+
+1. Get the Harbor URL:
+
+  You should be able to access your new Harbor installation through http://hub.cmtech-soft.com
+
+2. Login with the following credentials to see your Harbor application
+
+  echo Username: "admin"
+  echo Password: $(kubectl get secret --namespace harbor harbor-core-envvars -o jsonpath="{.data.HARBOR_ADMIN_PASSWORD}" | base64 --decode)
