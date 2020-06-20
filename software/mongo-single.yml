@@ -1,0 +1,147 @@
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: mongodb
+  namespace: mongo
+  labels:
+    app: mongodb
+    release: mongodb
+data:
+  mongodb-replica-set-key: U3FzVnhkeWRuOA==
+  mongodb-root-password: OVhUTVBGY3pqSw==
+type: Opaque
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongodb
+  namespace: mongo
+  labels:
+    app: mongodb
+    release: mongodb
+spec:
+  ports:
+    - name: mongodb
+      protocol: TCP
+      port: 27017
+      targetPort: mongodb
+  selector:
+    app: mongodb
+    component: primary
+    release: mongodb
+  type: ClusterIP
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongodb-headless
+  namespace: mongo
+  labels:
+    app: mongodb
+    release: mongodb
+spec:
+  ports:
+    - name: mongodb
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
+  selector:
+    app: mongodb
+    release: mongodb
+  clusterIP: None
+  type: ClusterIP
+
+---
+kind: StatefulSet
+apiVersion: apps/v1beta2
+metadata:
+  name: mongodb-primary
+  namespace: mongo
+  labels:
+    app: mongodb
+    release: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+      component: primary
+      release: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+        component: primary
+        release: mongodb
+    spec:
+      containers:
+        - name: mongodb-primary
+          image: docker.io/bitnami/mongodb:4.2.2-debian-9-r1
+          ports:
+            - name: mongodb
+              containerPort: 27017
+              protocol: TCP
+          env:
+            - name: MONGODB_SYSTEM_LOG_VERBOSITY
+              value: '0'
+            - name: MONGODB_DISABLE_SYSTEM_LOG
+              value: 'no'
+            - name: MONGODB_POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: MONGODB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: mongodb-root-password
+            - name: MONGODB_ENABLE_IPV6
+              value: 'no'
+            - name: MONGODB_ENABLE_DIRECTORY_PER_DB
+              value: 'no'
+          volumeMounts:
+            - name: datadir
+              mountPath: "/bitnami/mongodb"
+          livenessProbe:
+            exec:
+              command:
+                - pgrep
+                - mongod
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - mongo
+                - "--eval"
+                - db.adminCommand('ping')
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 6
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1001
+            runAsNonRoot: true
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
+      securityContext:
+        fsGroup: 1001
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir
+        creationTimestamp:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 20Gi
