@@ -145,3 +145,6 @@ spec:
         resources:
           requests:
             storage: 20Gi
+  serviceName: mongodb-headless
+  updateStrategy:
+    type: Recreate
