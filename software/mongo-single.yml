@@ -8,8 +8,8 @@ metadata:
     app: mongodb
     release: mongodb
 data:
-  mongodb-replica-set-key: U3FzVnhkeWRuOA==
-  mongodb-root-password: OVhUTVBGY3pqSw==
+  mongodb-replica-set-key: OVhUTVBGY3pqSw==
+  mongodb-root-password: U3FzVnhkeWRuOA==
 type: Opaque
 
 ---
