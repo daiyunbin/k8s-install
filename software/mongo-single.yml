@@ -3,12 +3,11 @@ kind: Secret
 apiVersion: v1
 metadata:
   name: mongodb
-  namespace: mongo
+  namespace: mongo-main
   labels:
     app: mongodb
     release: mongodb
 data:
-  mongodb-replica-set-key: OVhUTVBGY3pqSw==
   mongodb-root-password: U3FzVnhkeWRuOA==
 type: Opaque
 
@@ -17,28 +16,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: mongodb
-  namespace: mongo
-  labels:
-    app: mongodb
-    release: mongodb
-spec:
-  ports:
-    - name: mongodb
-      protocol: TCP
-      port: 27017
-      targetPort: mongodb
-  selector:
-    app: mongodb
-    component: primary
-    release: mongodb
-  type: ClusterIP
-
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: mongodb-headless
-  namespace: mongo
+  namespace: mongo-main
   labels:
     app: mongodb
     release: mongodb
@@ -58,8 +36,8 @@ spec:
 kind: StatefulSet
 apiVersion: apps/v1beta2
 metadata:
-  name: mongodb-primary
-  namespace: mongo
+  name: mongodb
+  namespace: mongo-main
   labels:
     app: mongodb
     release: mongodb
@@ -68,17 +46,15 @@ spec:
   selector:
     matchLabels:
       app: mongodb
-      component: primary
       release: mongodb
   template:
     metadata:
       labels:
         app: mongodb
-        component: primary
         release: mongodb
     spec:
       containers:
-        - name: mongodb-primary
+        - name: mongodb
           image: docker.io/bitnami/mongodb:4.2.2-debian-9-r1
           ports:
             - name: mongodb
@@ -144,5 +120,5 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: 20Gi
-  serviceName: mongodb-headless
+            storage: 512Gi
+  serviceName: mongodb
