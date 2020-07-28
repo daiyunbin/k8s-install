@@ -70,6 +70,13 @@ spec:
             - name: mongodb
               containerPort: 27017
               protocol: TCP
+          resources:
+            limits:
+              cpu: "8"
+              memory: 31Gi
+            requests:
+              cpu: "7"
+              memory: 30Gi
           env:
             - name: MONGODB_SYSTEM_LOG_VERBOSITY
               value: '0'

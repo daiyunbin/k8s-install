@@ -1,4 +1,4 @@
-```bash
+
 # 在k8s集群中所有Worker节点安装 ceph-common
 # 配置yum源
 cat > /etc/yum.repos.d/ceph.repo <<EOF
@@ -46,6 +46,3 @@ ceph auth get-key client.kube|base64
 # 创建并查看 pvc
 kubectl apply -f rbd-dynamic.yaml
 kubectl get pvc
-
-
-```
